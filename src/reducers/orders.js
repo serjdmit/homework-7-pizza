@@ -7,6 +7,22 @@ import { ADD_INGREDIENT } from '../actions/ingredients';
 // Обратите внимание на `orders.test.js`.
 // Он поможет понять, какие значения должен возвращать редьюсер.
 
+let orderPosition = 0;
+
+const nextOrder = () => {
+    if (orderPosition === 4) {
+        orderPosition = 3;
+    }
+    return orderPosition++;
+};
+const prevOrder = () => {
+    if (orderPosition === 1) {
+        orderPosition = 2;
+    }
+    return orderPosition--;
+};
+
+
 export default (state = [], action) => {
     switch (action.type) {
         case CREATE_NEW_ORDER:
@@ -18,11 +34,23 @@ export default (state = [], action) => {
                     position: 'clients',
                     recipe: [...action.payload.recipe]
                 }
-        ]
+            ]
         case MOVE_ORDER_NEXT:
-            return state;
+            nextOrder();
+            return [{
+                    id: state[0].id,
+                    ingredients: state[0].ingredients,
+                    position: `conveyor_${orderPosition}`,
+                    recipe: state[0].recipe
+            }];
         case MOVE_ORDER_BACK:
-            return state;
+            prevOrder();
+            return [{
+                id: state[0].id,
+                ingredients: state[0].ingredients,
+                position: `conveyor_${orderPosition}`,
+                recipe: state[0].recipe
+            }];
         case ADD_INGREDIENT:
             return state;
 
@@ -31,7 +59,5 @@ export default (state = [], action) => {
     }
 };
 
-export const getOrdersFor = (state, position) => {
+export const getOrdersFor = (state, position) =>
     state.orders.filter(order => order.position === position);
-
-}
