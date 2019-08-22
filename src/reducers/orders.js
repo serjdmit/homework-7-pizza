@@ -34,25 +34,30 @@ export default (state = [], action) => {
                     position: 'clients',
                     recipe: [...action.payload.recipe]
                 }
-            ]
+            ];
         case MOVE_ORDER_NEXT:
             nextOrder();
             return [{
-                    id: state[0].id,
-                    ingredients: state[0].ingredients,
-                    position: `conveyor_${orderPosition}`,
-                    recipe: state[0].recipe
+                id: state[state.length - 1].id,
+                ingredients: state[state.length - 1].ingredients,
+                position: `conveyor_${orderPosition}`,
+                recipe: state[state.length - 1].recipe
             }];
         case MOVE_ORDER_BACK:
             prevOrder();
             return [{
-                id: state[0].id,
-                ingredients: state[0].ingredients,
+                id: state[state.length - 1].id,
+                ingredients: state[state.length - 1].ingredients,
                 position: `conveyor_${orderPosition}`,
-                recipe: state[0].recipe
+                recipe: state[state.length - 1].recipe
             }];
         case ADD_INGREDIENT:
-            return state;
+            return [{
+                id: state[state.length - 1].id,
+                ingredients: state[state.length - 1].ingredients,
+                position: `conveyor_${orderPosition}`,
+                recipe: state[state.length - 1].recipe
+            }];
 
         default:
             return state;
