@@ -7,20 +7,17 @@ import { ADD_INGREDIENT } from '../actions/ingredients';
 // Обратите внимание на `orders.test.js`.
 // Он поможет понять, какие значения должен возвращать редьюсер.
 
-let orderPosition = 0;
+let orders = [];
 
-const nextOrder = () => {
-    if (orderPosition === 4) {
-        orderPosition = 3;
-    }
-    return orderPosition++;
-};
-const prevOrder = () => {
-    if (orderPosition === 1) {
-        orderPosition = 2;
-    }
-    return orderPosition--;
-};
+const positions = [
+    'clients',
+    'conveyor_1',
+    'conveyor_2',
+    'conveyor_3',
+    'conveyor_4'
+];
+
+
 
 
 export default (state = [], action) => {
@@ -36,28 +33,39 @@ export default (state = [], action) => {
                 }
             ];
         case MOVE_ORDER_NEXT:
-            nextOrder();
-            return [{
-                id: state[state.length - 1].id,
-                ingredients: state[state.length - 1].ingredients,
-                position: `conveyor_${orderPosition}`,
-                recipe: state[state.length - 1].recipe
-            }];
+            orders = state.map((order) => {
+                positions.some((position, index) => {
+                    if (order.position === position && index < positions.length - 1 ) {
+                        order.position = positions[index + 1];
+                        return true;
+                    }
+                });
+                return {
+                    id: order.id,
+                    ingredients: order.ingredients,
+                    position: order.position,
+                    recipe: order.recipe
+                };
+            });
+            return orders;
         case MOVE_ORDER_BACK:
-            prevOrder();
-            return [{
-                id: state[state.length - 1].id,
-                ingredients: state[state.length - 1].ingredients,
-                position: `conveyor_${orderPosition}`,
-                recipe: state[state.length - 1].recipe
-            }];
+            orders = state.map((order) => {
+                positions.some((position, index) => {
+                    if (order.position === position && index > 1) {
+                        order.position = positions[index - 1];
+                        return true;
+                    }
+                });
+                return {
+                    id: order.id,
+                    ingredients: order.ingredients,
+                    position: order.position,
+                    recipe: order.recipe
+                };
+            });
+            return orders;
         case ADD_INGREDIENT:
-            return [{
-                id: state[state.length - 1].id,
-                ingredients: state[state.length - 1].ingredients,
-                position: `conveyor_${orderPosition}`,
-                recipe: state[state.length - 1].recipe
-            }];
+            return state;
 
         default:
             return state;
