@@ -34,13 +34,21 @@ export default (state = [], action) => {
             ];
         case MOVE_ORDER_NEXT:
             orders = state.map((order) => {
+                let nextPosition = 0;
+                let ordersLength = state.length;
                 positions.some((position, index) => {
                     if (order.position === position && index < positions.length - 1 ) {
-                        order.position = positions[index + 1];
+                        nextPosition = positions[index + 1];
                         return true;
                     }
                 });
-                return {
+                if (order.id == ordersLength) return {
+                    id: order.id,
+                    ingredients: order.ingredients,
+                    position: nextPosition,
+                    recipe: order.recipe
+                };
+                if (order.id != ordersLength) return {
                     id: order.id,
                     ingredients: order.ingredients,
                     position: order.position,
