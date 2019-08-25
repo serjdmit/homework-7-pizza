@@ -7,7 +7,7 @@ import { ADD_INGREDIENT } from '../actions/ingredients';
 // Обратите внимание на `orders.test.js`.
 // Он поможет понять, какие значения должен возвращать редьюсер.
 
-let orders = [];
+// let orders = [];
 
 const positions = [
     'clients',
@@ -33,48 +33,38 @@ export default (state = [], action) => {
                 }
             ];
         case MOVE_ORDER_NEXT:
-            orders = state.map((order) => {
-                let nextPosition = 0;
-                let ordersLength = state.length;
-                positions.some((position, index) => {
-                    if (order.position === position && index < positions.length - 1 ) {
-                        nextPosition = positions[index + 1];
-                        return true;
-                    }
-                });
-                if (order.id == ordersLength) return {
-                    id: order.id,
-                    ingredients: order.ingredients,
-                    position: nextPosition,
-                    recipe: order.recipe
-                };
-                if (order.id != ordersLength) return {
-                    id: order.id,
-                    ingredients: order.ingredients,
-                    position: order.position,
-                    recipe: order.recipe
-                };
+            return state.map(order => {
+                if (order.id === action.payload && order.position !== positions[positions.length - 1]) {
+                    return {
+                        ...order,
+                        position: positions[positions.indexOf(order.position) + 1]
+                    };
+                }
+                return order;
             });
-            return orders;
         case MOVE_ORDER_BACK:
-            orders = state.map((order) => {
-                positions.some((position, index) => {
-                    if (order.position === position && index > 1) {
-                        order.position = positions[index - 1];
-                        return true;
-                    }
-                });
-                return {
-                    id: order.id,
-                    ingredients: order.ingredients,
-                    position: order.position,
-                    recipe: order.recipe
-                };
+            return state.map(order => {
+                if (order.id === action.payload && order.position !== positions[1]) {
+                    return {
+                        ...order,
+                        position: positions[positions.indexOf(order.position) - 1]
+                    };
+                }
+                return order;
             });
-            return orders;
         case ADD_INGREDIENT:
-            return state;
-
+            return state.map(order => {
+                if (order.position === action.payload.from) {
+                    order.recipe.map((product) => {
+                        if (product === action.payload.ingredient && !order.ingredients.includes(action.payload.ingredient)) {
+                            order.ingredients = [...order.ingredients, action.payload.ingredient];
+                            return order;
+                        }
+                        return order;
+                    });
+                }
+                return order;
+            });
         default:
             return state;
     }
