@@ -40,6 +40,12 @@ export default (state = [], action) => {
                         position: positions[positions.indexOf(order.position) + 1]
                     };
                 }
+                if (order.id === action.payload && order.position === positions[positions.length - 1] && order.ingredients.length === order.recipe.length) {
+                    return {
+                        ...order,
+                        position: 'finish'
+                    };
+                }
                 return order;
             });
         case MOVE_ORDER_BACK:
